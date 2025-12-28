@@ -1,0 +1,176 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="bot">
+
+    <xacro:arg name="is_ignition" default="true"/>
+
+    <xacro:include filename="$(find bot_description)/urdf/bot_gazebo.xacro"/>
+
+    <xacro:include filename="$(find bot_description)/urdf/bot_ros2_control.xacro"/>
+    
+    <link name="base_footprint"/>
+    
+    <link name="base_link">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <mesh filename="package://bot_description/meshes/base_link.STL"/>
+            </geometry>
+            <material name="baselink">
+                <color rgba="0 0 1 1"/>
+            </material>
+        </visual>
+        
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <mesh filename="package://bot_description/meshes/base_link.STL"/>
+            </geometry>
+        </collision>
+        
+        <inertial>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <mass value="1.0"/>
+            <inertia ixx="0.01" ixy="0.0" ixz="0.0" 
+                     iyy="0.01" iyz="0.0" izz="0.01"/>
+        </inertial>
+    </link>
+    
+    <joint name="basejoint" type="fixed">
+        <parent link="base_footprint"/>
+        <child link="base_link"/>
+        <origin xyz="0 0 0.033" rpy="0 0 0"/>
+    </joint>
+
+
+        <link name="right_wheel_link">
+        <visual>
+            <origin xyz="0 0 0" rpy="1.57 0 0"/>
+            <geometry>
+                <mesh filename="package://bot_description/meshes/wheel_right_link.STL"/>
+            </geometry>
+            <material name="rwlink">
+                <color rgba="1 0 0 1"/>
+            </material>
+        </visual>
+        
+        <collision>
+            <origin xyz="0 0 0" rpy="1.57 0 0"/>
+            <geometry>
+                <mesh filename="package://bot_description/meshes/wheel_right_link.STL"/>
+            </geometry>
+        </collision>
+        
+        <inertial>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <mass value="0.5"/>
+            <inertia ixx="0.005" ixy="0.0" ixz="0.0" 
+                     iyy="0.005" iyz="0.0" izz="0.005"/>
+        </inertial>
+    </link>
+
+    <joint name="right_wheel_joint" type="continuous">
+        <parent link="base_link"/>
+        <child link="right_wheel_link"/>
+        <origin xyz="0 -0.07 0" rpy="0 0 0"/>
+        <axis xyz="0 1 0"/>
+    </joint>
+
+    <link name="left_wheel_link">
+        <visual>
+            <origin xyz="0 0 0" rpy="-1.57 0 0"/>
+            <geometry>
+                <mesh filename="package://bot_description/meshes/wheel_left_link.STL"/>
+            </geometry>
+            <material name="lwlink">
+                <color rgba="1 0 0 1"/>
+            </material>
+        </visual>
+        
+        <collision>
+            <origin xyz="0 0 0" rpy="-1.57 0 0"/>
+            <geometry>
+                <mesh filename="package://bot_description/meshes/wheel_left_link.STL"/>
+            </geometry>
+        </collision>
+        
+        <inertial>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <mass value="0.5"/>
+            <inertia ixx="0.005" ixy="0.0" ixz="0.0" 
+                     iyy="0.005" iyz="0.0" izz="0.005"/>
+        </inertial>
+    </link>
+
+    <joint name="left_wheel_joint" type="continuous">
+        <parent link="base_link"/>
+        <child link="left_wheel_link"/>
+        <origin xyz="0 0.07 0" rpy="0 0 0"/>
+        <axis xyz="0 1 0"/>
+    </joint>
+
+    <link name="caster_front_link">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <mesh filename="package://bot_description/meshes/caster_front_link.STL"/>
+            </geometry>
+            <material name="cflink">
+                <color rgba="0 1 0 1"/>
+            </material>
+        </visual>
+        
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <mesh filename="package://bot_description/meshes/caster_front_link.STL"/>
+            </geometry>
+        </collision>
+        
+        <inertial>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <mass value="0.2"/>
+            <inertia ixx="0.002" ixy="0.0" ixz="0.0" 
+                     iyy="0.002" iyz="0.0" izz="0.002"/>
+        </inertial>
+    </link>
+
+    <joint name="caster_front_joint" type="fixed">
+        <parent link="base_link"/>
+        <child link="caster_front_link"/>
+        <origin xyz="0.04755 0 -0.0275" rpy="0 0 0"/>
+    </joint>
+    
+
+    <link name="caster_rear_link">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <mesh filename="package://bot_description/meshes/caster_rear_link.STL"/>
+            </geometry>
+            <material name="crlink">
+                <color rgba="0 1 0 1"/>
+            </material>
+        </visual>
+        
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <mesh filename="package://bot_description/meshes/caster_rear_link.STL"/>
+            </geometry>
+        </collision>
+        
+        <inertial>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <mass value="0.2"/>
+            <inertia ixx="0.002" ixy="0.0" ixz="0.0" 
+                     iyy="0.002" iyz="0.0" izz="0.002"/>
+        </inertial>
+    </link>
+    <joint name="caster_rear_joint" type="fixed">
+        <parent link="base_link"/>
+        <child link="caster_rear_link"/>
+        <origin xyz="-0.04755 0 -0.0275" rpy="0 0 0"/>
+    </joint>
+    
+</robot>
+
