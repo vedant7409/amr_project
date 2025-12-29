@@ -1,0 +1,40 @@
+controller_manager:
+  ros__parameters:
+    update_rate: 100.0 #10 times per second
+    use_sim_time: true
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+      publish_rate: 50.0
+
+    simple_velocity_controller:
+      type: velocity_controllers/JointGroupVelocityController
+
+simple_velocity_controller:
+  ros__parameters:
+    type: velocity_controllers/JointGroupVelocityController
+    joints:
+      - wheel_left_joint
+      - wheel_right_joint
+    state_publish_rate: 50.0
+  
+
+controller_manager:
+  ros__parameters:
+    update_rate: 100  # Hz
+
+    diff_drive_controller:
+      type: diff_drive_controller/DiffDriveController
+
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+
+diff_drive_controller:
+  ros__parameters:
+    left_wheel_names: ["left_wheel_joint"]
+    right_wheel_names: ["right_wheel_joint"]
+    
+    wheel_separation: 0.14  # meters (adjust to your robot)
+    wheel_radius: 0.065     # meters (adjust to your robot)
+    
+    publish_rate: 50.0
+    use_stamped_vel: false

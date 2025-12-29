@@ -9,13 +9,13 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 
 def generate_launch_description():
-    bot_description_path = get_package_share_directory('bot_description')
+    bot_description_path = get_package_share_directory('amr_project')
     ros_distro = os.environ.get('ROS_DISTRO')
     is_ignition = "True" if ros_distro == "humble" else "False"
     
     model_arg = DeclareLaunchArgument(
         name='model',
-        default_value=os.path.join(bot_description_path, 'urdf', 'bot.urdf.xacro'),
+        default_value=os.path.join(bot_description_path, 'urdf', 'bot.urdf'),
         description='Absolute path to robot urdf file'
     )
 

@@ -3,9 +3,8 @@
 
     <xacro:arg name="is_ignition" default="true"/>
 
-    <xacro:include filename="$(find bot_description)/urdf/bot_gazebo.xacro"/>
-
-    <xacro:include filename="$(find bot_description)/urdf/bot_ros2_control.xacro"/>
+    <xacro:include filename="$(find amr_project)/urdf/bot_gazebo.xacro"/>
+    <xacro:include filename="$(find amr_project)/urdf/bot_ros2_control.xacro"/> 
     
     <link name="base_footprint"/>
     
@@ -13,7 +12,7 @@
         <visual>
             <origin xyz="0 0 0" rpy="0 0 0"/>
             <geometry>
-                <mesh filename="package://bot_description/meshes/base_link.STL"/>
+                <mesh filename="package://amr_project/meshes/base_link.STL"/>
             </geometry>
             <material name="baselink">
                 <color rgba="0 0 1 1"/>
@@ -23,7 +22,7 @@
         <collision>
             <origin xyz="0 0 0" rpy="0 0 0"/>
             <geometry>
-                <mesh filename="package://bot_description/meshes/base_link.STL"/>
+                <mesh filename="package://amr_project/meshes/base_link.STL"/>
             </geometry>
         </collision>
         
@@ -46,7 +45,7 @@
         <visual>
             <origin xyz="0 0 0" rpy="1.57 0 0"/>
             <geometry>
-                <mesh filename="package://bot_description/meshes/wheel_right_link.STL"/>
+                <mesh filename="package://amr_project/meshes/wheel_right_link.STL"/>
             </geometry>
             <material name="rwlink">
                 <color rgba="1 0 0 1"/>
@@ -56,7 +55,7 @@
         <collision>
             <origin xyz="0 0 0" rpy="1.57 0 0"/>
             <geometry>
-                <mesh filename="package://bot_description/meshes/wheel_right_link.STL"/>
+                <mesh filename="package://amr_project/meshes/wheel_right_link.STL"/>
             </geometry>
         </collision>
         
@@ -79,7 +78,7 @@
         <visual>
             <origin xyz="0 0 0" rpy="-1.57 0 0"/>
             <geometry>
-                <mesh filename="package://bot_description/meshes/wheel_left_link.STL"/>
+                <mesh filename="package://amr_project/meshes/wheel_left_link.STL"/>
             </geometry>
             <material name="lwlink">
                 <color rgba="1 0 0 1"/>
@@ -89,7 +88,7 @@
         <collision>
             <origin xyz="0 0 0" rpy="-1.57 0 0"/>
             <geometry>
-                <mesh filename="package://bot_description/meshes/wheel_left_link.STL"/>
+                <mesh filename="package://amr_project/meshes/wheel_left_link.STL"/>
             </geometry>
         </collision>
         
@@ -112,7 +111,7 @@
         <visual>
             <origin xyz="0 0 0" rpy="0 0 0"/>
             <geometry>
-                <mesh filename="package://bot_description/meshes/caster_front_link.STL"/>
+                <mesh filename="package://amr_project/meshes/caster_front_link.STL"/>
             </geometry>
             <material name="cflink">
                 <color rgba="0 1 0 1"/>
@@ -122,7 +121,7 @@
         <collision>
             <origin xyz="0 0 0" rpy="0 0 0"/>
             <geometry>
-                <mesh filename="package://bot_description/meshes/caster_front_link.STL"/>
+                <mesh filename="package://amr_project/meshes/caster_front_link.STL"/>
             </geometry>
         </collision>
         
@@ -145,7 +144,7 @@
         <visual>
             <origin xyz="0 0 0" rpy="0 0 0"/>
             <geometry>
-                <mesh filename="package://bot_description/meshes/caster_rear_link.STL"/>
+                <mesh filename="package://amr_project/meshes/caster_rear_link.STL"/>
             </geometry>
             <material name="crlink">
                 <color rgba="0 1 0 1"/>
@@ -155,7 +154,7 @@
         <collision>
             <origin xyz="0 0 0" rpy="0 0 0"/>
             <geometry>
-                <mesh filename="package://bot_description/meshes/caster_rear_link.STL"/>
+                <mesh filename="package://amr_project/meshes/caster_rear_link.STL"/>
             </geometry>
         </collision>
         
