@@ -10,8 +10,8 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 
 def generate_launch_description():
-    bot_description_path = get_package_share_directory('bot_description')
-    bot_controller_path = get_package_share_directory('bot_controller')
+    bot_description_path = get_package_share_directory('amr_project')
+    bot_controller_path = get_package_share_directory('amr_controller')
     
     # Robot model argument
     model_arg = DeclareLaunchArgument(

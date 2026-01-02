@@ -1,12 +1,11 @@
 cmake_minimum_required(VERSION 3.5)
-project(bumperbot_description)
-
+project(amr_project)  # <--- CHANGED THIS
 
 find_package(ament_cmake REQUIRED)
 find_package(urdf REQUIRED)
 
 install(
-  DIRECTORY launch meshes models photos urdf rviz worlds
+  DIRECTORY launch meshes models photos urdf rviz worlds config
   DESTINATION share/${PROJECT_NAME}
 )
 
