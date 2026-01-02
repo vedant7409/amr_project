@@ -48,9 +48,13 @@ def generate_launch_description():
     )
 
     # Set Gazebo resource paths for models and worlds
+    package_allowance_dir = os.path.abspath(os.path.join(bot_description_path, '..'))
+
     gazebo_models_path = SetEnvironmentVariable(
         name='GZ_SIM_RESOURCE_PATH',
         value=[
+            package_allowance_dir,
+            ':',
             os.path.join(bot_description_path, 'models'),
             ':',
             os.path.join(bot_description_path, 'worlds')

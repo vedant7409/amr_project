@@ -4,6 +4,17 @@ from glob import glob
 
 package_name = 'amr_project'
 
+# Helper function to capture nested directory structures (important for AWS models)
+def package_files(directory):
+    paths = []
+    for (path, directories, filenames) in os.walk(directory):
+        for filename in filenames:
+            # We want to install to share/package_name/path_within_src
+            # path is something like 'robot_description/models/aws_warehouse/meshes'
+            install_path = os.path.join('share', package_name, path)
+            paths.append((install_path, [os.path.join(path, filename)]))
+    return paths
+
 setup(
     name=package_name,
     version='0.0.0',
@@ -12,51 +23,26 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
-        # Add launch files
-        (os.path.join('share', package_name, 'launch'), 
-            glob('robot_description/launch/*.launch.py')),
-        # Add URDF files
-        (os.path.join('share', package_name, 'urdf'), 
-            glob('robot_description/urdf/*.urdf') + 
-            glob('robot_description/urdf/*.xacro')),
-        # Add config files
-        (os.path.join('share', package_name, 'config'), 
-            glob('robot_description/config/*.yaml')),
-        # Add RViz config files
-        (os.path.join('share', package_name, 'rviz'), 
-            glob('robot_description/rviz/*.rviz')),
-        # Add meshes
-        (os.path.join('share', package_name, 'meshes'), 
-            glob('robot_description/meshes/*.STL') +
-            glob('robot_description/meshes/*.stl') +
-            glob('robot_description/meshes/*.dae') +
-            glob('robot_description/meshes/*.obj')),
-        # Add photos (textures for Gazebo models)
-        (os.path.join('share', package_name, 'photos'), 
-            glob('robot_description/photos/*.jpg') +
-            glob('robot_description/photos/*.png')),
-        # Add Gazebo models (AWS RoboMaker models)
-        (os.path.join('share', package_name, 'models'), 
-            glob('robot_description/models/**/*', recursive=True)),
-        # Add world files for Gazebo
-        (os.path.join('share', package_name, 'worlds'), 
-            glob('robot_description/worlds/*.world')),
-    ],
+        
+        # Standard folders
+        (os.path.join('share', package_name, 'launch'), glob('robot_description/launch/*.launch.py')),
+        (os.path.join('share', package_name, 'urdf'), glob('robot_description/urdf/*.urdf') + glob('robot_description/urdf/*.xacro')),
+        (os.path.join('share', package_name, 'config'), glob('robot_description/config/*.yaml')),
+        (os.path.join('share', package_name, 'rviz'), glob('robot_description/rviz/*.rviz')),
+        (os.path.join('share', package_name, 'meshes'), glob('robot_description/meshes/*')),
+        (os.path.join('share', package_name, 'worlds'), glob('robot_description/worlds/*.world')),
+        (os.path.join('share', package_name, 'photos'), glob('robot_description/photos/*')),
+        
+    ] + package_files('robot_description/models'), 
+    
     install_requires=['setuptools'],
     zip_safe=True,
     maintainer='vedant',
     maintainer_email='vedantkorgaonkar7@gmail.com',
     description='AMR SLAM Project for Orin Nano',
     license='Apache License 2.0',
-    extras_require={
-        'test': [
-            'pytest',
-        ],
-    },
+    tests_require=['pytest'],
     entry_points={
-        'console_scripts': [
-            # Add your ROS 2 nodes here when you create them
-            # Example: 'slam_node = amr_project.slam_node:main',
-        ],
+        'console_scripts': [],
     },
 )
