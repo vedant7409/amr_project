@@ -24,7 +24,7 @@ def generate_launch_description():
     # World argument - allow selection of different worlds
     world_arg = DeclareLaunchArgument(
         name='world',
-        default_value='empty.world',
+        default_value='small_house.world',
         description='World file name (empty.world, small_house.world, small_warehouse.world)'
     )
 
