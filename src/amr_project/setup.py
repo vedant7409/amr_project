@@ -4,16 +4,30 @@ from glob import glob
 
 package_name = 'amr_project'
 
-# Helper function to capture nested directory structures (important for AWS models)
-def package_files(directory):
-    paths = []
-    for (path, directories, filenames) in os.walk(directory):
-        for filename in filenames:
-            # We want to install to share/package_name/path_within_src
-            # path is something like 'robot_description/models/aws_warehouse/meshes'
-            install_path = os.path.join('share', package_name, path)
-            paths.append((install_path, [os.path.join(path, filename)]))
-    return paths
+# Recursively collect all files in models directory while preserving structure
+def get_data_files(directory, install_base):
+    """
+    Recursively collect files from a directory and prepare them for installation
+    while preserving the directory structure.
+    """
+    data_files = []
+    
+    for root, dirs, files in os.walk(directory):
+        # Calculate the relative path from the source directory
+        rel_path = os.path.relpath(root, directory)
+        
+        # Build the install path
+        if rel_path == '.':
+            install_path = install_base
+        else:
+            install_path = os.path.join(install_base, rel_path)
+        
+        # Collect all files in this directory
+        if files:
+            file_paths = [os.path.join(root, f) for f in files]
+            data_files.append((install_path, file_paths))
+    
+    return data_files
 
 setup(
     name=package_name,
@@ -24,16 +38,41 @@ setup(
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
         
-        # Standard folders
-        (os.path.join('share', package_name, 'launch'), glob('robot_description/launch/*.launch.py')),
-        (os.path.join('share', package_name, 'urdf'), glob('robot_description/urdf/*.urdf') + glob('robot_description/urdf/*.xacro')),
-        (os.path.join('share', package_name, 'config'), glob('robot_description/config/*.yaml')),
-        (os.path.join('share', package_name, 'rviz'), glob('robot_description/rviz/*.rviz')),
-        (os.path.join('share', package_name, 'meshes'), glob('robot_description/meshes/*')),
-        (os.path.join('share', package_name, 'worlds'), glob('robot_description/worlds/*.world')),
-        (os.path.join('share', package_name, 'photos'), glob('robot_description/photos/*')),
+        # Launch files
+        (os.path.join('share', package_name, 'launch'), 
+            glob('robot_description/launch/*.launch.py')),
         
-    ] + package_files('robot_description/models'), 
+        # URDF files
+        (os.path.join('share', package_name, 'urdf'), 
+            glob('robot_description/urdf/*.urdf') + 
+            glob('robot_description/urdf/*.xacro')),
+        
+        # Config files
+        (os.path.join('share', package_name, 'config'), 
+            glob('robot_description/config/*.yaml')),
+        
+        # RViz files
+        (os.path.join('share', package_name, 'rviz'), 
+            glob('robot_description/rviz/*.rviz')),
+        
+        # Meshes
+        (os.path.join('share', package_name, 'meshes'), 
+            glob('robot_description/meshes/*.STL') +
+            glob('robot_description/meshes/*.stl') +
+            glob('robot_description/meshes/*.dae') +
+            glob('robot_description/meshes/*.obj')),
+        
+        # Worlds
+        (os.path.join('share', package_name, 'worlds'), 
+            glob('robot_description/worlds/*.world') +
+            glob('robot_description/worlds/*.sdf')),
+        
+        # Photos
+        (os.path.join('share', package_name, 'photos'), 
+            glob('robot_description/photos/*.jpg') +
+            glob('robot_description/photos/*.png')),
+        
+    ] + get_data_files('robot_description/models', os.path.join('share', package_name, 'models')),
     
     install_requires=['setuptools'],
     zip_safe=True,
