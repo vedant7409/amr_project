@@ -13,20 +13,20 @@ def generate_launch_description():
     bot_description_path = get_package_share_directory('amr_project')
     bot_controller_path = get_package_share_directory('amr_controller')
     
-    
+    # Robot model argument
     model_arg = DeclareLaunchArgument(
         name='model',
         default_value=os.path.join(bot_description_path, 'urdf', 'bot.urdf.xacro'),
         description='Absolute path to robot urdf file'
     )
 
-    
+    # Process the xacro file
     robot_description = ParameterValue(
         Command(['xacro ', LaunchConfiguration('model')]), 
         value_type=str
     )
 
-    
+    # Robot state publisher
     robot_state_publisher_node = Node(
         package='robot_state_publisher',
         executable='robot_state_publisher',
@@ -34,7 +34,7 @@ def generate_launch_description():
         output='screen'
     )
 
-    
+    # Set Gazebo resource path
     gazebo_resource_path = SetEnvironmentVariable(
         name='GZ_SIM_RESOURCE_PATH',
         value=[os.path.join(bot_description_path, 'models')]
