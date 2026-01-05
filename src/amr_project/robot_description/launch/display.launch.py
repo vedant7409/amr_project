@@ -97,10 +97,10 @@ def generate_launch_description():
     #    output='screen'
     #)
 
-    return LaunchDescription([
-        base_sim_launch,
-        rviz_node
-    ])
+    #return LaunchDescription([
+    #    base_sim_launch,
+    #    rviz_node
+    #])
 
     # Delay controller spawning to allow Gazebo to initialize
     delayed_joint_state_broadcaster = TimerAction(
