@@ -79,6 +79,16 @@ def generate_launch_description():
         arguments=['simple_velocity_controller', '--param-file', controller_config],
         output='screen'
     )
+    #base_sim_launch = IncludeLaunchDescription(
+    #   PythonLaunchDescriptionSource(
+    #     os.path.join(pkg_share, 'launch', 'sim_base.launch.py')
+    #    ),
+    #    # You can OVERRIDE arguments here!
+    #    launch_arguments={
+    #        'world': 'obstacles.sdf', 
+    #        'use_sim_time': 'true'
+    #    }.items()
+    #)
 
     # Delay controller spawning to allow Gazebo to initialize
     delayed_joint_state_broadcaster = TimerAction(
