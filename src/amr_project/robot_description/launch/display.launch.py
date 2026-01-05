@@ -89,6 +89,18 @@ def generate_launch_description():
     #        'use_sim_time': 'true'
     #    }.items()
     #)
+    #rviz_config = os.path.join(pkg_share, 'config', 'view_bot.rviz')
+    #rviz_node = Node(
+    #    package='rviz2',
+    #    executable='rviz2',
+    #    arguments=['-d', rviz_config],
+    #    output='screen'
+    #)
+
+    return LaunchDescription([
+        base_sim_launch,
+        rviz_node
+    ])
 
     # Delay controller spawning to allow Gazebo to initialize
     delayed_joint_state_broadcaster = TimerAction(
