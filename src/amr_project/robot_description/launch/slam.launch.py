@@ -10,7 +10,7 @@ from ament_index_python.packages import get_package_share_directory
 
 def generate_launch_description():
     
-    # Get package directories
+     # Get package directories
     bot_description_path = get_package_share_directory('amr_project')
     
     # Declare arguments
