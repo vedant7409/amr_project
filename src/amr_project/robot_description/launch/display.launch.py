@@ -81,7 +81,7 @@ def generate_launch_description():
     )
     #base_sim_launch = IncludeLaunchDescription(
     #   PythonLaunchDescriptionSource(
-    #     os.path.join(pkg_share, 'launch', 'sim_base.launch.py')
+    #     os.path.join(pkg_share, 'launch', 'gazebo.launch.py')
     #    ),
     #    # You can OVERRIDE arguments here!
     #    launch_arguments={
@@ -89,7 +89,7 @@ def generate_launch_description():
     #        'use_sim_time': 'true'
     #    }.items()
     #)
-    #rviz_config = os.path.join(pkg_share, 'config', 'view_bot.rviz')
+    #rviz_config = os.path.join(pkg_share, 'config', 'display.rviz')
     #rviz_node = Node(
     #    package='rviz2',
     #    executable='rviz2',
