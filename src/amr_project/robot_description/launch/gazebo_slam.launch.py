@@ -10,7 +10,7 @@ def generate_launch_description():
     
     bot_description_path = get_package_share_directory('amr_project')
     
-    # Launch Gazebo
+     # Launch Gazebo
     gazebo_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
             os.path.join(bot_description_path, 'launch', 'gazebo.launch.py')
