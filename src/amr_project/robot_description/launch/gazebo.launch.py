@@ -6,7 +6,7 @@ from ament_index_python.packages import get_package_share_directory
 from launch_ros.parameter_descriptions import ParameterValue
 from launch.substitutions import Command, LaunchConfiguration
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import Command, LaunchConfiguration, PathJoinSubstitution
+from launch.substitutions import PathJoinSubstitution
 
 
 def generate_launch_description():
@@ -14,21 +14,22 @@ def generate_launch_description():
     ros_distro = os.environ.get('ROS_DISTRO')
     is_ignition = "True" if ros_distro == "humble" else "False"
     
-    # Model argument - point to xacro file
+    # 1. Declare Global Arguments
+    use_sim_time = LaunchConfiguration('use_sim_time', default='true')
+
     model_arg = DeclareLaunchArgument(
         name='model',
         default_value=os.path.join(bot_description_path, 'urdf', 'bot.urdf.xacro'),
         description='Absolute path to robot urdf/xacro file'
     )
 
-    # World argument - allow selection of different worlds
     world_arg = DeclareLaunchArgument(
         name='world',
         default_value='small_house.world',
-        description='World file name (empty.world, small_house.world, small_warehouse.world)'
+        description='World file name'
     )
 
-    # Process xacro to get robot description
+    # 2. Process xacro
     robot_description = ParameterValue(
         Command([
             'xacro ', 
@@ -39,17 +40,19 @@ def generate_launch_description():
         value_type=str
     )
 
-    # Robot State Publisher Node
+    # 3. Robot State Publisher (Synchronized with Sim Time)
     robot_state_publisher_node = Node(
         package='robot_state_publisher',
         executable='robot_state_publisher',
-        parameters=[{'robot_description': robot_description}],
+        parameters=[{
+            'robot_description': robot_description,
+            'use_sim_time': True # Crucial for TF sync
+        }],
         output='screen',
     )
 
-    # Set Gazebo resource paths for models and worlds
+    # 4. Gazebo Environment Setup
     package_allowance_dir = os.path.abspath(os.path.join(bot_description_path, '..'))
-
     gazebo_models_path = SetEnvironmentVariable(
         name='GZ_SIM_RESOURCE_PATH',
         value=[
@@ -61,14 +64,12 @@ def generate_launch_description():
         ]
     )
 
-    # Build full path to world file
     world_path = PathJoinSubstitution([
-    bot_description_path,
-    'worlds',
-    LaunchConfiguration('world')
+        bot_description_path,
+        'worlds',
+        LaunchConfiguration('world')
     ])
 
-    # Launch Gazebo with selected world
     gazebo_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
             os.path.join(get_package_share_directory('ros_gz_sim'), 'launch', 'gz_sim.launch.py')
@@ -78,18 +79,19 @@ def generate_launch_description():
         ]
     )
 
-    # Spawn robot entity in Gazebo
+    # 5. Spawn Entity
     gz_spawn_entity = Node(
         package='ros_gz_sim',
         executable='create',
         output='screen',
         arguments=[
             '-topic', 'robot_description',
-            '-name', 'bot'
+            '-name', 'bot',
+            '-allow_renaming', 'true'
         ]
     )
 
-    # Bridge for sensor topics (LiDAR, IMU, Clock)
+    
     gz_bridge = Node(
         package='ros_gz_bridge',
         executable='parameter_bridge',
@@ -97,43 +99,35 @@ def generate_launch_description():
             '/scan@sensor_msgs/msg/LaserScan[gz.msgs.LaserScan',
             '/imu@sensor_msgs/msg/Imu[gz.msgs.IMU',
             '/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock',
+            '/tf@tf2_msgs/msg/TFMessage[gz.msgs.Pose_V',
+            '/tf_static@tf2_msgs/msg/TFMessage[gz.msgs.Pose_V',
+            '/odom@nav_msgs/msg/Odometry[gz.msgs.Odometry'
         ],
-        output='screen',
-        remappings=[
-            ('/scan', '/scan'),
-            ('/imu', '/imu'),
-        ]
+        output='screen'
     )
 
-    # Joint State Broadcaster Spawner (with delay)
+    # 7. Controller Spawners 
     joint_state_broadcaster_spawner = TimerAction(
-        period=3.0,  # Wait 3 seconds for Gazebo to fully load
+        period=3.0,
         actions=[
             Node(
                 package='controller_manager',
                 executable='spawner',
-                arguments=[
-                    'joint_state_broadcaster',
-                    '--controller-manager',
-                    '/controller_manager'
-                ],
+                arguments=['joint_state_broadcaster'],
+                parameters=[{'use_sim_time': True}],
                 output='screen',
             )
         ]
     )
     
-    # Diff Drive Controller Spawner (with longer delay)
     diff_drive_controller_spawner = TimerAction(
-        period=5.0,  # Wait 5 seconds
+        period=5.0,
         actions=[
             Node(
                 package='controller_manager',
                 executable='spawner',
-                arguments=[
-                    'diff_drive_controller',
-                    '--controller-manager',
-                    '/controller_manager'
-                ],
+                arguments=['diff_drive_controller'],
+                parameters=[{'use_sim_time': True}],
                 output='screen',
             )
         ]
