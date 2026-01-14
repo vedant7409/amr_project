@@ -19,7 +19,7 @@ def generate_launch_description():
     
     # Launch SLAM (with delay to let Gazebo start)
     slam_launch = TimerAction(
-        period=8.0,
+        period=1.0,
         actions=[
             IncludeLaunchDescription(
                 PythonLaunchDescriptionSource([
