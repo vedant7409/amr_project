@@ -92,6 +92,7 @@ def generate_launch_description():
     )
 
     
+    # 6. Gazebo-ROS Bridge
     gz_bridge = Node(
         package='ros_gz_bridge',
         executable='parameter_bridge',
@@ -99,11 +100,20 @@ def generate_launch_description():
             '/scan@sensor_msgs/msg/LaserScan[gz.msgs.LaserScan',
             '/imu@sensor_msgs/msg/Imu[gz.msgs.IMU',
             '/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock',
-            '/tf@tf2_msgs/msg/TFMessage[gz.msgs.Pose_V',
-            '/tf_static@tf2_msgs/msg/TFMessage[gz.msgs.Pose_V',
-            '/odom@nav_msgs/msg/Odometry[gz.msgs.Odometry'
+            '/camera/left/image@sensor_msgs/msg/Image[gz.msgs.Image',
+            '/camera/left/camera_info@sensor_msgs/msg/CameraInfo[gz.msgs.CameraInfo',
+            '/camera/right/image@sensor_msgs/msg/Image[gz.msgs.Image',
+            '/camera/right/camera_info@sensor_msgs/msg/CameraInfo[gz.msgs.CameraInfo',
+            '/camera/depth/image@sensor_msgs/msg/Image[gz.msgs.Image',
+            '/camera/depth/camera_info@sensor_msgs/msg/CameraInfo[gz.msgs.CameraInfo',
         ],
-        output='screen'
+        output='screen',
+        parameters=[{'use_sim_time': LaunchConfiguration('use_sim_time')}],
+        remappings=[
+            ('/camera/left/image', '/camera/left/image_raw'),
+            ('/camera/right/image', '/camera/right/image_raw'),
+            ('/camera/depth/image', '/camera/depth/image_raw'),
+        ]
     )
 
     # 7. Controller Spawners 
