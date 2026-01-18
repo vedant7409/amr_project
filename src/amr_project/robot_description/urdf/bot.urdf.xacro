@@ -4,7 +4,7 @@
     <xacro:arg name="is_ignition" default="true"/>
 
     <xacro:include filename="$(find amr_project)/urdf/bot_gazebo.xacro"/>
-    <xacro:include filename="$(find amr_project)/urdf/bot_ros2_control.xacro"/> 
+    <xacro:include filename="$(find amr_project)/urdf/amr_controller.xacro"/> 
     
     
     <material name="blue">

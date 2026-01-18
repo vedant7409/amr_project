@@ -4,9 +4,8 @@ from launch.actions import DeclareLaunchArgument, SetEnvironmentVariable, Includ
 import os
 from ament_index_python.packages import get_package_share_directory
 from launch_ros.parameter_descriptions import ParameterValue
-from launch.substitutions import Command, LaunchConfiguration
+from launch.substitutions import Command, LaunchConfiguration, PathJoinSubstitution
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import PathJoinSubstitution
 
 
 def generate_launch_description():
@@ -14,22 +13,28 @@ def generate_launch_description():
     ros_distro = os.environ.get('ROS_DISTRO')
     is_ignition = "True" if ros_distro == "humble" else "False"
     
-    # 1. Declare Global Arguments
-    use_sim_time = LaunchConfiguration('use_sim_time', default='true')
-
+    
+    use_sim_time_arg = DeclareLaunchArgument(
+        'use_sim_time',
+        default_value='true',
+        description='Use simulation time'
+    )
+    
+    # Model argument
     model_arg = DeclareLaunchArgument(
         name='model',
         default_value=os.path.join(bot_description_path, 'urdf', 'bot.urdf.xacro'),
         description='Absolute path to robot urdf/xacro file'
     )
 
+    # World argument
     world_arg = DeclareLaunchArgument(
         name='world',
-        default_value='small_house.world',
-        description='World file name'
+        default_value='empty.world',
+        description='World file name (empty.world, small_house.world, small_warehouse.world)'
     )
 
-    # 2. Process xacro
+    
     robot_description = ParameterValue(
         Command([
             'xacro ', 
@@ -40,36 +45,44 @@ def generate_launch_description():
         value_type=str
     )
 
-    # 3. Robot State Publisher (Synchronized with Sim Time)
+    # Robot State Publisher Node
     robot_state_publisher_node = Node(
         package='robot_state_publisher',
         executable='robot_state_publisher',
-        parameters=[{
-            'robot_description': robot_description,
-            'use_sim_time': True # Crucial for TF sync
-        }],
+        parameters=[
+            {'robot_description': robot_description},
+            {'use_sim_time': LaunchConfiguration('use_sim_time')}
+        ],
         output='screen',
     )
 
-    # 4. Gazebo Environment Setup
-    package_allowance_dir = os.path.abspath(os.path.join(bot_description_path, '..'))
-    gazebo_models_path = SetEnvironmentVariable(
+    
+    existing_path = os.environ.get('GZ_SIM_RESOURCE_PATH', '')
+    
+    # Build list of paths
+    new_paths = [
+        bot_description_path,
+        os.path.dirname(bot_description_path),
+    ]
+    
+    # Prepend existing path if it exists
+    if existing_path:
+        new_paths.insert(0, existing_path)
+    
+    # Set Gazebo resource path
+    gazebo_resource_path = SetEnvironmentVariable(
         name='GZ_SIM_RESOURCE_PATH',
-        value=[
-            package_allowance_dir,
-            ':',
-            os.path.join(bot_description_path, 'models'),
-            ':',
-            os.path.join(bot_description_path, 'worlds')
-        ]
+        value=os.pathsep.join(new_paths)
     )
 
+    # Build full path to world file
     world_path = PathJoinSubstitution([
         bot_description_path,
         'worlds',
         LaunchConfiguration('world')
     ])
 
+    # Launch Gazebo with selected world
     gazebo_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
             os.path.join(get_package_share_directory('ros_gz_sim'), 'launch', 'gz_sim.launch.py')
@@ -79,20 +92,24 @@ def generate_launch_description():
         ]
     )
 
-    # 5. Spawn Entity
-    gz_spawn_entity = Node(
-        package='ros_gz_sim',
-        executable='create',
-        output='screen',
-        arguments=[
-            '-topic', 'robot_description',
-            '-name', 'bot',
-            '-allow_renaming', 'true'
+    
+    gz_spawn_entity = TimerAction(
+        period=2.0,
+        actions=[
+            Node(
+                package='ros_gz_sim',
+                executable='create',
+                output='screen',
+                arguments=[
+                    '-topic', 'robot_description',
+                    '-name', 'bot'
+                ],
+                parameters=[{'use_sim_time': LaunchConfiguration('use_sim_time')}]
+            )
         ]
     )
 
     
-    # 6. Gazebo-ROS Bridge
     gz_bridge = Node(
         package='ros_gz_bridge',
         executable='parameter_bridge',
@@ -110,43 +127,57 @@ def generate_launch_description():
         output='screen',
         parameters=[{'use_sim_time': LaunchConfiguration('use_sim_time')}],
         remappings=[
+            ('/scan', '/scan'),
+            ('/imu', '/imu'),
             ('/camera/left/image', '/camera/left/image_raw'),
             ('/camera/right/image', '/camera/right/image_raw'),
             ('/camera/depth/image', '/camera/depth/image_raw'),
         ]
     )
 
-    # 7. Controller Spawners 
+    
     joint_state_broadcaster_spawner = TimerAction(
-        period=3.0,
+        period=4.0,
         actions=[
             Node(
                 package='controller_manager',
                 executable='spawner',
-                arguments=['joint_state_broadcaster'],
-                parameters=[{'use_sim_time': True}],
+                arguments=[
+                    'joint_state_broadcaster',
+                    '--controller-manager',
+                    '/controller_manager'
+                ],
+                parameters=[{'use_sim_time': LaunchConfiguration('use_sim_time')}],
                 output='screen',
             )
         ]
     )
     
+    
     diff_drive_controller_spawner = TimerAction(
-        period=5.0,
+        period=6.0,
         actions=[
             Node(
                 package='controller_manager',
                 executable='spawner',
-                arguments=['diff_drive_controller'],
-                parameters=[{'use_sim_time': True}],
+                arguments=[
+                    'diff_drive_controller',
+                    '--controller-manager',
+                    '/controller_manager'
+                ],
+                parameters=[{'use_sim_time': LaunchConfiguration('use_sim_time')}],
                 output='screen',
             )
         ]
     )
 
+    
+    
     return LaunchDescription([
+        use_sim_time_arg,  
         model_arg,
         world_arg,
-        gazebo_models_path,
+        gazebo_resource_path,
         gazebo_launch,
         robot_state_publisher_node,
         gz_spawn_entity,
