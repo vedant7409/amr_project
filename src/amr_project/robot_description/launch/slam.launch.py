@@ -14,7 +14,7 @@ def generate_launch_description():
     # Declare arguments
     use_sim_time_arg = DeclareLaunchArgument(
         'use_sim_time',
-        default_value='true',  # Changed to 'true' for simulation
+        default_value='true',  
         description='Use simulation time'
     )
     
