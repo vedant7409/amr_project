@@ -83,6 +83,7 @@
     
     <gazebo reference="laser_link">
         <sensor name="laser_sensor" type="gpu_lidar">
+            <gz_frame_id>laser_link</gz_frame_id>
             <always_on>true</always_on>
             <update_rate>10</update_rate>
             <visualize>true</visualize>
@@ -189,6 +190,18 @@
                 </noise>
             </camera>
         </sensor>
+    </gazebo>
+
+    <gazebo reference="laser_joint">
+        <preserveFixedJoint>true</preserveFixedJoint>
+    </gazebo>
+
+    <gazebo reference="imu_joint">
+        <preserveFixedJoint>true</preserveFixedJoint>
+    </gazebo>
+
+    <gazebo reference="camera_mount_joint">
+        <preserveFixedJoint>true</preserveFixedJoint>
     </gazebo>
 
 </robot>
