@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
-<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="bot_ros2_control">
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="amr_control">
 
     <xacro:arg name="is_ignition" default="true"/>
     
-    <!-- ros2_control configuration -->
+    
     <ros2_control name="GazeboSystem" type="system">
         <hardware>
             <xacro:if value="$(arg is_ignition)">
@@ -14,7 +14,7 @@
             </xacro:unless>
         </hardware>
         
-        <!-- Right wheel joint -->
+        
         <joint name="right_wheel_joint">
             <command_interface name="velocity">
                 <param name="min">-10</param>
@@ -25,7 +25,7 @@
             <state_interface name="effort"/>
         </joint>
         
-        <!-- Left wheel joint -->
+        
         <joint name="left_wheel_joint">
             <command_interface name="velocity">
                 <param name="min">-10</param>
@@ -37,7 +37,7 @@
         </joint>
     </ros2_control>
     
-    <!-- Gazebo ros2_control plugin -->
+    
     <gazebo>
         <plugin filename="gz_ros2_control-system" 
                 name="gz_ros2_control::GazeboSimROS2ControlPlugin">

@@ -13,7 +13,7 @@ def generate_launch_description():
         description='Use simulation time'
     )
     
-    # Isaac ROS Visual SLAM Node
+    
     visual_slam_node = Node(
         package='isaac_ros_visual_slam',
         executable='isaac_ros_visual_slam',
@@ -42,7 +42,7 @@ def generate_launch_description():
         output='screen'
     )
     
-    # RViz for visualization
+    
     rviz_node = Node(
         package='rviz2',
         executable='rviz2',

@@ -20,14 +20,14 @@ def generate_launch_description():
         description='Use simulation time'
     )
     
-    # Model argument
+    
     model_arg = DeclareLaunchArgument(
         name='model',
         default_value=os.path.join(bot_description_path, 'urdf', 'bot.urdf.xacro'),
         description='Absolute path to robot urdf/xacro file'
     )
 
-    # World argument
+    
     world_arg = DeclareLaunchArgument(
         name='world',
         default_value='empty.world',
@@ -45,7 +45,7 @@ def generate_launch_description():
         value_type=str
     )
 
-    # Robot State Publisher Node
+    
     robot_state_publisher_node = Node(
         package='robot_state_publisher',
         executable='robot_state_publisher',
@@ -59,30 +59,30 @@ def generate_launch_description():
     
     existing_path = os.environ.get('GZ_SIM_RESOURCE_PATH', '')
     
-    # Build list of paths
+    
     new_paths = [
         bot_description_path,
         os.path.dirname(bot_description_path),
     ]
     
-    # Prepend existing path if it exists
+    
     if existing_path:
         new_paths.insert(0, existing_path)
     
-    # Set Gazebo resource path
+    
     gazebo_resource_path = SetEnvironmentVariable(
         name='GZ_SIM_RESOURCE_PATH',
         value=os.pathsep.join(new_paths)
     )
 
-    # Build full path to world file
+    
     world_path = PathJoinSubstitution([
         bot_description_path,
         'worlds',
         LaunchConfiguration('world')
     ])
 
-    # Launch Gazebo with selected world
+    
     gazebo_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
             os.path.join(get_package_share_directory('ros_gz_sim'), 'launch', 'gz_sim.launch.py')
